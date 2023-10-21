@@ -1,0 +1,49 @@
+#cloud-config
+${yamlencode(
+{
+  "write_files": [
+    {
+      "path": "/etc/systemd/journald.conf",
+      "owner": "root:root",
+      "permissions": "0644"
+      "content": "[Journal]\nStorage=auto\nCompress=yes\nSyncIntervalSec=5m\nRateLimitInterval=30s\nRateLimitBurst=10000\nSystemMaxUse=3G\nSystemKeepFree=25%\nSystemMaxFileSize=10M\nMaxRetentionSec=1month\nMaxFileSec=1month\n",
+    },
+    {
+      "path": "/etc/systemd/system/var-www.mount",
+      "owner": "root:root",
+      "permissions": "0644"
+      "content": "[Unit]\nDescription=Mount NFS share\nAfter=network-online.target remote-fs.target\nBefore=umount.target\nWants=network-online.target\nConflicts=umount.target\n[Mount]\nWhat=${aws_efs_mount_target_wp_blog_dns}:/\nWhere=/var/www\nType=nfs4\nOptions=nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport,_netdev\nTimeoutSec=60\nDirectoryMode=0775\n[Install]\nWantedBy=multi-user.target\n",
+    },
+    {
+      "path": "/etc/environment",
+      "owner": "root:root",
+      "permissions": "0644"
+      "content": "export MYSQL_PASSWD=${db_password_prod}\nexport MYSQL_LOGIN=${db_user_name_prod}\nexport MYSQL_DBNAME=${db_name_prod}\nexport MYSQL_ADDRESS=${db_address}\n",
+    },
+  ],
+  "timezone" = "${timezone}",
+  "package_update": "${package_update}",
+  "package_upgrade": "${package_upgrade}",
+  "packages": [
+  "mc",
+  "htop",
+  "iotop",
+  "tcpdump",
+  "pigz",
+  "sysfsutils",
+  "nfs-utils",
+  "chrony",
+  "nc",
+  "amazon-efs-utils",
+  "amazon-linux-extras"
+  ],
+  "runcmd" = [
+    "yum erase ntp*",
+    "systemctl start chronyd && systemctl enable chronyd",
+    "systemctl restart systemd-journald systemd-journald.socket",
+    "mkdir -p /var/www && chown ec2-user:ec2-user /var/www && chmod 01755 /var/www",
+    "systemctl daemon-reload && systemctl enable var-www.mount && systemctl start var-www.mount",
+    "source /etc/environment"
+  ],
+}
+)}

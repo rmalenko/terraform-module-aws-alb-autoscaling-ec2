@@ -1,0 +1,6 @@
+email               = "r@gmail.com"
+domain              = "jazzfest.link"
+domain_private      = "jazzfest.prz"
+aws_region          = "us-east-1"
+profile             = "ro"
+allowed_account_ids = "71"

@@ -1,0 +1,12 @@
+[submodule "modules/aws-vpc"]
+	path = modules/aws-vpc
+	url = git@github.com:terraform-aws-modules/terraform-aws-vpc.git
+[submodule "modules/aws-security-group"]
+	path = modules/aws-security-group
+	url = https://github.com/terraform-aws-modules/terraform-aws-security-group.git
+[submodule "modules/aws-ec2-spot-price"]
+	path = modules/aws-ec2-spot-price
+	url = https://github.com/fivexl/terraform-aws-ec2-spot-price.git
+[submodule "modules/aws-s3-bucket"]
+	path = modules/aws-s3-bucket
+	url = https://github.com/terraform-aws-modules/terraform-aws-s3-bucket.git
